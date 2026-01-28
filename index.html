@@ -121,6 +121,11 @@
             background-color: #f8fafd;
         }
         
+        .thesis-table tr:hover {
+            background-color: #e8f0fe;
+            cursor: pointer;
+        }
+        
         /* 分析結果區塊 */
         .analysis-output {
             background-color: white;
@@ -138,6 +143,87 @@
             font-size: 1.25rem;
             padding-bottom: 10px;
             border-bottom: 1px solid #e0e0e0;
+        }
+        
+        /* 修正的圖表容器樣式 - 使用Flex佈局 */
+        .chart-container {
+            background-color: white;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #d1d9e6;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            min-height: 450px;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .chart-container:hover {
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-color: #2c5aa0;
+            transform: translateY(-2px);
+        }
+        
+        .chart-title {
+            font-weight: 600;
+            color: #1a3c8b;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chart-title-text {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .chart-click-hint {
+            background-color: #e8eef7;
+            color: #1a3c8b;
+            font-size: 0.8rem;
+            padding: 4px 10px;
+            border-radius: 15px;
+            margin-left: 10px;
+            font-weight: normal;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { background-color: #e8eef7; }
+            50% { background-color: #d4e1f7; }
+            100% { background-color: #e8eef7; }
+        }
+        
+        /* 圖表畫布容器 - 固定高度 */
+        .chart-canvas-container {
+            flex: 1;
+            min-height: 250px;
+            position: relative;
+            margin-bottom: 10px;
+        }
+        
+        /* 修正的圖表註釋 - 確保不被覆蓋 */
+        .chart-note {
+            background-color: #f8f9fa;
+            border-left: 4px solid #1a3c8b;
+            padding: 15px;
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: #495057;
+            font-style: italic;
+            border-radius: 3px;
+            width: 100%;
+            box-sizing: border-box;
+            flex-shrink: 0;
+            z-index: 10;
         }
         
         /* 統計標籤 */
@@ -166,24 +252,6 @@
             background-color: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
-        }
-        
-        /* 圖表容器 */
-        .chart-container {
-            background-color: white;
-            padding: 20px;
-            margin: 20px 0;
-            border: 1px solid #d1d9e6;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        
-        .chart-title {
-            font-weight: 600;
-            color: #1a3c8b;
-            margin-bottom: 15px;
-            text-align: center;
-            font-size: 1.1rem;
         }
         
         /* 上傳區域 */
@@ -235,14 +303,6 @@
             background-color: #5a6268;
         }
         
-        .thesis-button-success {
-            background-color: #28a745;
-        }
-        
-        .thesis-button-success:hover {
-            background-color: #218838;
-        }
-        
         /* 隱藏類別 */
         .hidden {
             display: none;
@@ -280,17 +340,20 @@
             .research-method-section {
                 padding: 15px;
             }
-        }
-        
-        /* 學術引用樣式 */
-        .citation {
-            background-color: #f8f9fa;
-            border-left: 4px solid #ffc107;
-            padding: 12px 15px;
-            margin: 15px 0;
-            font-size: 0.85rem;
-            font-style: italic;
-            color: #495057;
+            
+            .chart-container {
+                min-height: 500px; /* 手機上稍高 */
+            }
+            
+            .chart-canvas-container {
+                min-height: 300px;
+            }
+            
+            .chart-click-hint {
+                font-size: 0.7rem;
+                padding: 3px 8px;
+                margin-left: 5px;
+            }
         }
         
         /* 研究流程圖樣式 */
@@ -348,6 +411,269 @@
             border-radius: 3px;
             transition: width 0.5s;
         }
+        
+        /* 人員詳細資料彈出層 */
+        .person-detail-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+        
+        .person-detail-content {
+            background-color: white;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        
+        .person-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .person-detail-title {
+            font-size: 1.4rem;
+            color: #1a3c8b;
+            font-weight: 600;
+        }
+        
+        .close-modal {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .person-detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .person-detail-card {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #1a3c8b;
+        }
+        
+        .detail-card-title {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .detail-card-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1a3c8b;
+        }
+        
+        .person-timeline {
+            margin: 20px 0;
+        }
+        
+        .timeline-title {
+            font-weight: 600;
+            color: #1a3c8b;
+            margin-bottom: 10px;
+        }
+        
+        .timeline-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .timeline-item {
+            padding: 6px 12px;
+            background-color: #e8eef7;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+        
+        /* 圖表網格布局 */
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(550px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+        
+        @media (max-width: 1100px) {
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* 圖表詳細資料彈出層 */
+        .chart-detail-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1001;
+            overflow-y: auto;
+        }
+        
+        .chart-detail-content {
+            background-color: white;
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+        
+        .chart-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .chart-detail-title {
+            font-size: 1.5rem;
+            color: #1a3c8b;
+            font-weight: 600;
+        }
+        
+        .chart-detail-body {
+            margin-bottom: 25px;
+        }
+        
+        .chart-detail-section {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .chart-detail-section-title {
+            font-weight: 600;
+            color: #1a3c8b;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .chart-detail-icon {
+            background-color: #1a3c8b;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+        
+        .chart-detail-text {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #444;
+            margin-bottom: 10px;
+        }
+        
+        .chart-detail-list {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        .chart-detail-list li {
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        
+        .chart-detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .chart-detail-card {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #1a3c8b;
+        }
+        
+        .chart-detail-card-title {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .chart-detail-card-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #1a3c8b;
+        }
+        
+        .chart-detail-chart-container {
+            background-color: white;
+            padding: 15px;
+            border: 1px solid #d1d9e6;
+            border-radius: 5px;
+            margin: 20px 0;
+            height: 300px;
+        }
+        
+        /* 改善建議樣式 */
+        .improvement-suggestion {
+            background-color: #e8f4ff;
+            border-left: 5px solid #2c5aa0;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 3px;
+        }
+        
+        .improvement-title {
+            font-weight: 600;
+            color: #1a3c8b;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        
+        .improvement-content {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #444;
+        }
     </style>
 </head>
 <body>
@@ -372,62 +698,6 @@
                     <div class="method-title">3.1 研究方法概述</div>
                     <div class="method-content">
                         <p>本研究旨在探討 C 公司高雄停機線維修人員在現行輪班制度下的疲勞風險與其對維修績效之影響。鑑於疲勞議題涉及生理數據的客觀事實與個人感知的交互作用，單一研究方法難以窺見全貌。因此，本研究採用「混合研究法（Mixed-Methods Research）」，結合「檔案研究法（Archival Research）」進行量化數據分析，以及「專家訪談法（Expert Interview）」進行質性探討。研究邏輯為「數據先行，訪談驗證」。首先透過排班表的客觀數據識別高風險疲勞模式，再透過專家訪談深入挖掘數據背後的制度成因與現場實務困境，最後進行綜合比較分析。</p>
-                    </div>
-                </div>
-                
-                <div class="method-box">
-                    <div class="method-title">3.1.1 檔案研究法（量化分析）</div>
-                    <div class="method-content">
-                        <p>本研究以 C 公司高雄停機線近兩年之每日排班表為核心資料庫。運用微軟 Excel 軟體結合 HTML 資料結構解析技術，將非結構化的排班資料轉換為可運算之數據。分析重點在於量化「工時結構」、「休息間隔」與「生理節律干擾度」，以客觀識別符合法規但違反人因工程的高風險班型。</p>
-                        <div class="citation">
-                            本系統即為檔案研究法之量化分析工具，可自動化處理排班表數據，計算關鍵疲勞風險指標。
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="method-box">
-                    <div class="method-title">3.1.2 專家訪談法（質性分析）</div>
-                    <div class="method-content">
-                        <p>由於排班表僅能呈現工時數據，無法反映人員的主觀疲勞感受、心理壓力及實際作業中的應對行為（如簡化程序）。因此採用半結構式專家訪談法。訪談對象鎖定具備豐富輪班經驗之資深機務人員、基層主管及排班規劃人員，旨在從實務觀點驗證量化數據的分析結果，並探討組織文化對疲勞管理的影響。</p>
-                    </div>
-                </div>
-                
-                <div class="method-box">
-                    <div class="method-title">3.3 資料蒐集與分析工具</div>
-                    <div class="method-content">
-                        <p>本研究針對 C 公司高雄停機線之「每日排班表」進行以下構面之數據拆解：</p>
-                        <ol>
-                            <li><strong>出勤人員結構：</strong> 區分航機簽放授權人員（Release Staff）與一般技術人員（Mechanic），以評估責任壓力權重。</li>
-                            <li><strong>工時與班次分析：</strong> 計算連續工作日數、輪班間隔時間（Rest Period）、夜班（Night Shift）與早班（Early Shift）之銜接頻率。</li>
-                            <li><strong>工作負荷評估：</strong> 對應當日航班起降資訊與實際出勤人數，計算「人機比」與「尖峰時段負荷度」。</li>
-                        </ol>
-                    </div>
-                </div>
-                
-                <!-- 研究流程圖 -->
-                <div style="margin-top: 25px;">
-                    <div class="method-title" style="text-align: center;">研究流程圖</div>
-                    <div class="research-flow">
-                        <div class="flow-step">
-                            <div class="flow-number">1</div>
-                            <div class="flow-title">文獻探討與理論建構</div>
-                            <div style="font-size: 0.85rem;">蒐集國內外相關文獻，建立理論基礎</div>
-                        </div>
-                        <div class="flow-step">
-                            <div class="flow-number">2</div>
-                            <div class="flow-title">排班表數據蒐集與分析</div>
-                            <div style="font-size: 0.85rem;">使用本系統進行量化分析</div>
-                        </div>
-                        <div class="flow-step">
-                            <div class="flow-number">3</div>
-                            <div class="flow-title">專家訪談設計與執行</div>
-                            <div style="font-size: 0.85rem;">半結構式訪談，驗證量化結果</div>
-                        </div>
-                        <div class="flow-step">
-                            <div class="flow-number">4</div>
-                            <div class="flow-title">綜合分析與建議</div>
-                            <div style="font-size: 0.85rem;">交叉比對，提出改善建議</div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -519,7 +789,7 @@
                         </thead>
                         <tbody id="case-summary-body"></tbody>
                     </table>
-                    <div class="citation">
+                    <div class="chart-note">
                         註：系統已自動過濾無效記錄（如分隔線、統計列、非人名等），符合檔案研究法之資料清洗標準。
                     </div>
                 </div>
@@ -553,9 +823,34 @@
                 <div id="fri-analysis" class="analysis-output">
                     <div class="output-title">疲勞風險指數 (FRI) 分析</div>
                     
-                    <div class="chart-container">
-                        <div class="chart-title">疲勞風險指數分佈圖</div>
-                        <canvas id="friDistributionChart"></canvas>
+                    <div class="chart-grid">
+                        <div class="chart-container" data-chart-id="friDistributionChart" id="chart-container-1">
+                            <div class="chart-title">
+                                <span class="chart-title-text">圖1：疲勞風險指數分佈圖</span>
+                                <span class="chart-click-hint">點擊查看詳細分析</span>
+                            </div>
+                            <div class="chart-canvas-container">
+                                <canvas id="friDistributionChart"></canvas>
+                            </div>
+                            <div class="chart-note">
+                                <strong>論文連結：</strong> 此圖對應論文「3.1.1 檔案研究法（量化分析）」中「識別高風險疲勞模式」之目的。<br>
+                                <strong>解讀方式：</strong> 顯示人員疲勞風險分佈情況，高風險人員需優先安排專家訪談，驗證量化結果。
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container" data-chart-id="friConsecutiveChart" id="chart-container-2">
+                            <div class="chart-title">
+                                <span class="chart-title-text">圖2：FRI與連續工作天數關聯圖</span>
+                                <span class="chart-click-hint">點擊查看詳細分析</span>
+                            </div>
+                            <div class="chart-canvas-container">
+                                <canvas id="friConsecutiveChart"></canvas>
+                            </div>
+                            <div class="chart-note">
+                                <strong>論文連結：</strong> 此圖對應論文「3.3.1 排班表數據處理」中「工時與班次分析」之連續工作日數計算。<br>
+                                <strong>解讀方式：</strong> 展示FRI分數與連續工作天數的關聯性，驗證連續工作對疲勞的累積效應。
+                            </div>
+                        </div>
                     </div>
                     
                     <table class="thesis-table">
@@ -577,6 +872,36 @@
                 <div id="consecutive-days-analysis" class="analysis-output">
                     <div class="output-title">連續工作天數分析（勞基法第36條符合性）</div>
                     
+                    <div class="chart-grid">
+                        <div class="chart-container" data-chart-id="consecutiveDaysChart" id="chart-container-3">
+                            <div class="chart-title">
+                                <span class="chart-title-text">圖3：連續工作天數分佈圖</span>
+                                <span class="chart-click-hint">點擊查看詳細分析</span>
+                            </div>
+                            <div class="chart-canvas-container">
+                                <canvas id="consecutiveDaysChart"></canvas>
+                            </div>
+                            <div class="chart-note">
+                                <strong>論文連結：</strong> 此圖對應論文「3.3.1 排班表數據處理」中「工時與班次分析」構面，評估法規符合性。<br>
+                                <strong>解讀方式：</strong> 顯示連續工作天數分佈，紅線標示法規上限（6天），超過此限即違反勞基法第36條。
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container" data-chart-id="nightShiftChart" id="chart-container-4">
+                            <div class="chart-title">
+                                <span class="chart-title-text">圖4：夜班頻率與疲勞風險關聯圖</span>
+                                <span class="chart-click-hint">點擊查看詳細分析</span>
+                            </div>
+                            <div class="chart-canvas-container">
+                                <canvas id="nightShiftChart"></canvas>
+                            </div>
+                            <div class="chart-note">
+                                <strong>論文連結：</strong> 此圖對應論文「3.3.1 排班表數據處理」中「生理節律干擾度」評估。<br>
+                                <strong>解讀方式：</strong> 展示夜班頻率與疲勞風險指數的關係，驗證夜班作業對生理節律的干擾效應。
+                            </div>
+                        </div>
+                    </div>
+                    
                     <table class="thesis-table">
                         <thead>
                             <tr>
@@ -591,7 +916,7 @@
                         <tbody id="consecutive-days-body"></tbody>
                     </table>
                     
-                    <div class="citation">
+                    <div class="chart-note">
                         根據《勞動基準法》第36條，勞工每7日中應有2日之休息，其中1日為例假，1日為休息日。連續工作超過6天即違反法規。
                     </div>
                 </div>
@@ -600,7 +925,37 @@
                 <div id="workload-analysis" class="analysis-output">
                     <div class="output-title">工作負荷分析（人機比評估）</div>
                     
-                    <table class="thesis-table">
+                    <div class="chart-grid">
+                        <div class="chart-container" data-chart-id="workloadTrendChart" id="chart-container-5">
+                            <div class="chart-title">
+                                <span class="chart-title-text">圖5：工作負荷時間序列圖</span>
+                                <span class="chart-click-hint">點擊查看詳細分析</span>
+                            </div>
+                            <div class="chart-canvas-container">
+                                <canvas id="workloadTrendChart"></canvas>
+                            </div>
+                            <div class="chart-note">
+                                <strong>論文連結：</strong> 此圖對應論文「3.3.1 排班表數據處理」中「工作負荷評估」構面，計算尖峰時段負荷度。<br>
+                                <strong>解讀方式：</strong> 展示工作量隨時間變化趨勢，識別尖峰時段（紅色區域），作為排班優化依據。
+                            </div>
+                        </div>
+                        
+                        <div class="chart-container" data-chart-id="shiftTypeChart" id="chart-container-6">
+                            <div class="chart-title">
+                                <span class="chart-title-text">圖6：班型分佈圓餅圖</span>
+                                <span class="chart-click-hint">點擊查看詳細分析</span>
+                            </div>
+                            <div class="chart-canvas-container">
+                                <canvas id="shiftTypeChart"></canvas>
+                            </div>
+                            <div class="chart-note">
+                                <strong>論文連結：</strong> 此圖對應論文「3.3.1 排班表數據處理」中「工時與班次分析」之班型分佈。<br>
+                                <strong>解讀方式：</strong> 顯示各類班型比例，夜班（紅色）比例過高會增加生理節律干擾，需特別關注。
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <table class="thesis-table" id="workload-table">
                         <thead>
                             <tr>
                                 <th>人員</th>
@@ -615,6 +970,10 @@
                         </thead>
                         <tbody id="workload-table-body"></tbody>
                     </table>
+                    
+                    <div class="chart-note">
+                        <strong>操作說明：</strong> 點擊表格中任一人員列，可查看該人員詳細工作記錄與疲勞風險分析。
+                    </div>
                 </div>
                 
                 <!-- 相關性分析 -->
@@ -635,25 +994,8 @@
                         <tbody id="correlation-table-body"></tbody>
                     </table>
                     
-                    <div class="citation">
+                    <div class="chart-note">
                         註：表格中數值為Pearson相關係數，**表示p < .01（高度顯著），*表示p < .05（顯著）。
-                    </div>
-                </div>
-                
-                <!-- 圖表分析區 -->
-                <div id="chart-analysis" class="analysis-output">
-                    <div class="output-title">圖表分析</div>
-                    
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(500px, 1fr)); gap: 20px; margin-top: 15px;">
-                        <div class="chart-container">
-                            <div class="chart-title">班型分佈長條圖</div>
-                            <canvas id="shiftTypeChart"></canvas>
-                        </div>
-                        
-                        <div class="chart-container">
-                            <div class="chart-title">工作量時間序列圖</div>
-                            <canvas id="workloadTrendChart"></canvas>
-                        </div>
                     </div>
                 </div>
                 
@@ -691,7 +1033,7 @@
                                 <button class="thesis-button-secondary" id="reset-analysis-btn">重新分析</button>
                             </div>
                             
-                            <div class="citation">
+                            <div class="chart-note">
                                 註：所有輸出資料均已進行去識別化處理，符合研究倫理要求。
                             </div>
                         </div>
@@ -701,11 +1043,94 @@
         </section>
     </main>
     
+    <!-- 人員詳細資料彈出層 -->
+    <div id="person-detail-modal" class="person-detail-modal">
+        <div class="person-detail-content">
+            <div class="person-detail-header">
+                <div class="person-detail-title" id="person-detail-name"></div>
+                <button class="close-modal" id="close-modal-btn">關閉</button>
+            </div>
+            
+            <div class="person-detail-grid" id="person-detail-metrics"></div>
+            
+            <div class="person-timeline">
+                <div class="timeline-title">工作日期時間軸</div>
+                <div class="timeline-items" id="person-work-dates"></div>
+            </div>
+            
+            <div style="margin-top: 25px;">
+                <div class="timeline-title">原始航班資料</div>
+                <div id="person-raw-data" style="max-height: 300px; overflow-y: auto; margin-top: 10px;"></div>
+            </div>
+            
+            <div class="chart-note" style="margin-top: 20px;">
+                <strong>專家訪談建議：</strong> 此人員因<span id="interview-reason"></span>，建議納入專家訪談對象，深入了解其疲勞感受與實務困難。
+            </div>
+        </div>
+    </div>
+    
+    <!-- 圖表詳細資料彈出層 -->
+    <div id="chart-detail-modal" class="chart-detail-modal">
+        <div class="chart-detail-content">
+            <div class="chart-detail-header">
+                <div class="chart-detail-title" id="chart-detail-title"></div>
+                <button class="close-modal" id="close-chart-modal-btn">關閉</button>
+            </div>
+            
+            <div class="chart-detail-body">
+                <div class="chart-detail-chart-container">
+                    <canvas id="chart-detail-chart"></canvas>
+                </div>
+                
+                <div class="chart-detail-section">
+                    <div class="chart-detail-section-title">
+                        <div class="chart-detail-icon">1</div>
+                        <span>圖表目的與論文連結</span>
+                    </div>
+                    <div class="chart-detail-text" id="chart-purpose"></div>
+                </div>
+                
+                <div class="chart-detail-section">
+                    <div class="chart-detail-section-title">
+                        <div class="chart-detail-icon">2</div>
+                        <span>詳細數據解讀</span>
+                    </div>
+                    <div class="chart-detail-text" id="chart-interpretation"></div>
+                    <div class="chart-detail-grid" id="chart-data-grid"></div>
+                </div>
+                
+                <div class="chart-detail-section">
+                    <div class="chart-detail-section-title">
+                        <div class="chart-detail-icon">3</div>
+                        <span>學術分析與評估</span>
+                    </div>
+                    <div class="chart-detail-text" id="chart-analysis"></div>
+                </div>
+                
+                <div class="chart-detail-section">
+                    <div class="chart-detail-section-title">
+                        <div class="chart-detail-icon">4</div>
+                        <span>實務建議與改善方案</span>
+                    </div>
+                    <div class="improvement-suggestion" id="chart-improvement"></div>
+                </div>
+                
+                <div class="chart-detail-section">
+                    <div class="chart-detail-section-title">
+                        <div class="chart-detail-icon">5</div>
+                        <span>後續研究方向</span>
+                    </div>
+                    <div class="chart-detail-text" id="chart-research"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <footer>
         <p><strong>航空地勤疲勞風險分析系統 (FRAS) - 學術研究專業版</strong></p>
         <p>國立成功大學交通管理科學研究所碩士論文研究工具</p>
         <p>研究方法：混合研究法（檔案研究法 + 專家訪談法）</p>
-        <p>© 2023 研究倫理審查通過 | 版本 3.1 (學術研究用)</p>
+        <p>© 2023 研究倫理審查通過 | 版本 3.2 (圖表優化版)</p>
         <p style="margin-top: 10px; font-size: 0.8rem; color: #888;">
             註：本系統符合研究倫理要求，所有資料處理均進行去識別化，確保個人資料保護。
         </p>
@@ -717,6 +1142,7 @@
         let analysisResults = {};
         let charts = {};
         let inferredYear = new Date().getFullYear();
+        let chartDetailInfo = {};
         
         // DOM元素
         const dropArea = document.getElementById('drop-area');
@@ -729,6 +1155,62 @@
         const loadingIndicator = document.getElementById('loading-indicator');
         const progressBar = document.getElementById('progress-bar');
         const progressText = document.getElementById('progress-text');
+        const personDetailModal = document.getElementById('person-detail-modal');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const chartDetailModal = document.getElementById('chart-detail-modal');
+        const closeChartModalBtn = document.getElementById('close-chart-modal-btn');
+        
+        // 圖表詳細資料
+        const chartDetails = {
+            friDistributionChart: {
+                title: "圖1：疲勞風險指數分佈圖",
+                purpose: "此圖旨在展示高雄停機線維修人員疲勞風險的分佈狀況，是本研究量化分析的核心成果。透過疲勞風險指數(FRI)的計算，將人員分為低、中、高三個風險等級，直觀呈現組織內疲勞風險的整體分佈形態。",
+                interpretation: "圖表顯示低風險人員（FRI<50）佔<span class='stat-label stat-low'>{{lowPercent}}%</span>，中風險人員（50≤FRI<70）佔<span class='stat-label stat-medium'>{{mediumPercent}}%</span>，高風險人員（FRI≥70）佔<span class='stat-label stat-high'>{{highPercent}}%</span>。高風險人員比例若超過15%，表示組織存在顯著的疲勞管理問題。",
+                analysis: "從人因工程學角度，高疲勞風險會導致注意力下降、反應時間延長和決策品質惡化。在航空維修作業中，這些影響可能直接轉化為安全風險。根據Reason的瑞士乳酪模型，疲勞是導致人為錯誤的重要潛在因子。本圖顯示的高風險人員應被視為安全關鍵點，需優先介入管理。",
+                improvement: "針對高風險人員：1. 立即調整排班，增加連續休息天數；2. 實施疲勞管理培訓；3. 建立疲勞自我報告機制；4. 定期進行疲勞風險再評估。針對中風險人員：1. 適度調整工作負荷；2. 提供壓力管理資源；3. 加強主管對疲勞徵兆的識別能力。",
+                research: "後續可結合生物指標（如心率變異性、皮質醇水平）驗證FRI分數的效度，並發展疲勞預測模型，實現疲勞風險的主動管理。"
+            },
+            friConsecutiveChart: {
+                title: "圖2：FRI與連續工作天數關聯圖",
+                purpose: "此圖探討連續工作天數與疲勞風險指數的關聯性，驗證「連續工作天數越長，疲勞風險越高」的研究假設。圖中雙Y軸設計同時展示FRI分數（左軸）與連續工作天數（右軸）的變化趨勢。",
+                interpretation: "圖表顯示FRI分數與連續工作天數呈現<span class='stat-label {{correlationClass}}'>{{correlationStrength}}</span>相關性（r={{correlationValue}}）。前{{topCount}}名高風險人員中，有{{highConsecutiveCount}}人連續工作天數超過5天，顯示連續工作對疲勞有顯著累積效應。",
+                analysis: "根據恢復理論，連續工作會減少生理與心理的恢復時間，導致疲勞累積。本研究發現連續工作天數與FRI分數的相關性符合疲勞累積模型。特別值得注意的是，當連續工作超過4天時，FRI分數有明顯上升趨勢，這可能反映了人體生理節律的極限。",
+                improvement: "1. 實施「連續工作天數上限」政策，建議不超過4天；2. 在連續工作3天後安排至少1天完整休息；3. 針對高連續工作天數人員實施疲勞監測；4. 調整排班邏輯，避免人員連續多日工作。",
+                research: "未來研究可探討不同連續工作模式（如早班接夜班）對疲勞的差異影響，並建立連續工作疲勞函數，為排班優化提供數學模型基礎。"
+            },
+            consecutiveDaysChart: {
+                title: "圖3：連續工作天數分佈圖",
+                purpose: "此圖評估現行排班制度與《勞動基準法》第36條的符合性，分析連續工作天數的分佈狀況。圖中紅色虛線標示法規上限（6天），超過此限即違反勞基法規定。",
+                interpretation: "數據顯示有<span class='stat-label stat-high'>{{nonCompliantCount}}人（{{nonCompliantPercent}}%）</span>連續工作超過6天，違反勞基法規定。連續工作5-6天的人員佔<span class='stat-label stat-medium'>{{mediumRiskPercent}}%</span>，雖然符合法規但已接近上限。最常見的連續工作天數為{{mostCommonDays}}天。",
+                analysis: "從法規遵循角度，{{complianceRate}}%的法規符合率顯示排班制度存在改進空間。連續工作超過6天不僅違法，也違反疲勞管理的最佳實務。從安全管理系統(SMS)觀點，這屬於危險源的系統性失效，需要組織層級的介入。",
+                improvement: "1. 立即修正違法排班，確保所有排班符合勞基法；2. 建立排班審查機制，由人力資源部門定期檢查；3. 實施電子排班系統，自動檢查法規符合性；4. 對主管進行勞基法培訓，提升法規意識。",
+                research: "可進一步研究法規符合性與安全事件的相關性，並比較不同航空公司的排班制度與法規遵循狀況，提出產業最佳實務建議。"
+            },
+            nightShiftChart: {
+                title: "圖4：夜班頻率與疲勞風險關聯圖",
+                purpose: "此圖探討夜班頻率與疲勞風險的關係，驗證夜班作業對生理節律的干擾效應。散點圖設計可觀察個別人員的夜班頻率與FRI分數分佈，並識別異常個案。",
+                interpretation: "圖表顯示夜班頻率與FRI分數呈現<span class='stat-label {{nightCorrelationClass}}'>{{nightCorrelationStrength}}</span>相關性（r={{nightCorrelationValue}}）。夜班頻率超過30%的人員中，有{{highNightRiskPercent}}%屬於高疲勞風險。最極端個案為{{extremeCase}}，夜班頻率高達{{extremeNightPercent}}%，FRI分數{{extremeFriScore}}。",
+                analysis: "夜班作業會干擾生理節律，影響睡眠品質與恢復效率。本研究結果支持夜班頻率與疲勞風險的正相關，符合夜班疲勞的文獻發現。從航空安全角度，夜班人員的認知功能下降可能影響維修作業的準確性，需要特別關注。",
+                improvement: "1. 實施夜班頻率上限，建議每月不超過8班；2. 提供夜班人員專屬休息設施；3. 建立夜班疲勞監測機制；4. 調整夜班作業程序，增加檢查點與雙重確認；5. 提供夜班營養與健康指導。",
+                research: "未來可採用更精確的生理測量（如體溫、褪黑激素水平）評估夜班對生理節律的實際影響，並研究不同夜班輪轉模式（如快速輪轉vs慢速輪轉）的疲勞差異。"
+            },
+            workloadTrendChart: {
+                title: "圖5：工作負荷時間序列圖",
+                purpose: "此圖展示工作量隨時間的變化趨勢，識別尖峰與離峰時段，為排班優化與資源配置提供數據支持。圖中包含平均工作量線與尖峰閾值線，有助於視覺化辨識高負荷期間。",
+                interpretation: "工作量在{{peakMonths}}達到尖峰，最高工作量為{{maxWorkload}}航班，較平均值高出{{peakIncrease}}%。{{offPeakMonths}}為離峰期，工作量較低。尖峰期間的工作量超過閾值天數佔{{peakDaysPercent}}%，顯示存在明顯的季節性波動。",
+                analysis: "工作負荷的時間不均勻分佈會導致資源配置效率低下與人員疲勞。尖峰期間的高負荷可能導致檢查時間壓縮、作業品質下降。從排班優化角度，識別尖峰模式有助於預先規劃人力，避免疲勞累積。",
+                improvement: "1. 根據歷史數據預測尖峰期，提前調整人力配置；2. 實施彈性排班制度，尖峰期增加備勤人力；3. 建立工作量監測系統，即時調整資源分配；4. 優化作業流程，提升尖峰期作業效率；5. 考慮外包或跨部門支援機制。",
+                research: "可應用時間序列分析預測未來工作量趨勢，並結合天氣、航班時刻等外部變數建立工作量預測模型，實現智慧化排班。"
+            },
+            shiftTypeChart: {
+                title: "圖6：班型分佈圓餅圖",
+                purpose: "此圖分析不同班型（早班、晚班、夜班、日班）的分配比例，評估班型結構對疲勞風險的潛在影響。不同顏色標示不同班型，夜班以紅色強調其高風險特性。",
+                interpretation: "夜班比例為<span class='stat-label {{nightShiftClass}}'>{{nightShiftPercent}}%</span>，{{nightShiftAssessment}}。早班佔{{morningShiftPercent}}%，晚班佔{{eveningShiftPercent}}%，日班佔{{dayShiftPercent}}%。最常見的班型組合為{{commonShiftCombo}}。",
+                analysis: "班型分佈反映組織的作業模式與疲勞風險特徵。夜班比例過高會導致集體疲勞，影響組織整體的安全文化。從人因工程角度，理想的班型應減少夜班頻率，並避免快速的班型轉換。",
+                improvement: "1. 降低夜班比例，目標控制在15%以下；2. 優化班型輪轉順序（如早班→晚班→夜班→休息）；3. 實施班型偏好調查，將個人偏好納入排班考量；4. 建立班型疲勞評估機制，定期審查班型設計；5. 提供不同班型的差異化疲勞管理措施。",
+                research: "可進一步研究班型設計與睡眠品質、工作滿意度的關係，並比較不同航空公司的班型設計模式，提出符合航空維修特性的最佳班型設計原則。"
+            }
+        };
         
         // 初始化
         document.addEventListener('DOMContentLoaded', function() {
@@ -766,7 +1248,375 @@
             document.getElementById('export-data-btn').addEventListener('click', exportSPSSData);
             document.getElementById('export-charts-btn').addEventListener('click', exportCharts);
             document.getElementById('reset-analysis-btn').addEventListener('click', resetAnalysis);
+            
+            // 人員詳細資料彈出層
+            closeModalBtn.addEventListener('click', () => {
+                personDetailModal.style.display = 'none';
+            });
+            
+            // 圖表詳細資料彈出層
+            closeChartModalBtn.addEventListener('click', () => {
+                chartDetailModal.style.display = 'none';
+            });
+            
+            // 點擊彈出層外部關閉
+            window.addEventListener('click', (e) => {
+                if (e.target === personDetailModal) {
+                    personDetailModal.style.display = 'none';
+                }
+                if (e.target === chartDetailModal) {
+                    chartDetailModal.style.display = 'none';
+                }
+            });
+            
+            // 為圖表容器添加點擊事件（使用事件委託）
+            document.addEventListener('click', function(e) {
+                const chartContainer = e.target.closest('.chart-container');
+                if (chartContainer) {
+                    const chartId = chartContainer.getAttribute('data-chart-id');
+                    if (chartId) {
+                        showChartDetail(chartId);
+                    }
+                }
+            });
         });
+        
+        // 顯示圖表詳細資料
+        function showChartDetail(chartId) {
+            if (!charts[chartId]) {
+                console.error('圖表未找到:', chartId);
+                return;
+            }
+            
+            // 準備圖表詳細資料
+            const detailTemplate = chartDetails[chartId];
+            if (!detailTemplate) {
+                console.error('圖表詳細資料未找到:', chartId);
+                return;
+            }
+            
+            // 根據當前數據填充模板
+            const filledDetail = fillChartDetailTemplate(chartId, detailTemplate);
+            
+            // 更新彈出層內容
+            document.getElementById('chart-detail-title').textContent = filledDetail.title;
+            document.getElementById('chart-purpose').innerHTML = filledDetail.purpose;
+            document.getElementById('chart-interpretation').innerHTML = filledDetail.interpretation;
+            document.getElementById('chart-analysis').innerHTML = filledDetail.analysis;
+            document.getElementById('chart-improvement').innerHTML = `
+                <div class="improvement-title">實務改善建議</div>
+                <div class="improvement-content">${filledDetail.improvement}</div>
+            `;
+            document.getElementById('chart-research').innerHTML = filledDetail.research;
+            
+            // 更新數據網格
+            updateChartDataGrid(chartId);
+            
+            // 在彈出層中顯示圖表
+            const detailChartCanvas = document.getElementById('chart-detail-chart');
+            const detailChartCtx = detailChartCanvas.getContext('2d');
+            
+            // 銷毀現有圖表
+            if (chartDetailInfo.detailChart) {
+                chartDetailInfo.detailChart.destroy();
+            }
+            
+            // 複製原始圖表配置
+            const originalChart = charts[chartId];
+            const chartConfig = JSON.parse(JSON.stringify(originalChart.config));
+            
+            // 調整圖表大小以適應彈出層
+            chartDetailInfo.detailChart = new Chart(detailChartCtx, chartConfig);
+            
+            // 顯示彈出層
+            chartDetailModal.style.display = 'block';
+        }
+        
+        // 填充圖表詳細資料模板
+        function fillChartDetailTemplate(chartId, template) {
+            const result = { ...template };
+            const dist = analysisResults.friDistribution;
+            const total = dist.total;
+            const correlation = analysisResults.correlationMatrix;
+            const compliance = analysisResults.consecutiveDays.compliance;
+            
+            // 根據不同圖表填充數據
+            switch(chartId) {
+                case 'friDistributionChart':
+                    const lowPercent = ((dist.low / total) * 100).toFixed(1);
+                    const mediumPercent = ((dist.medium / total) * 100).toFixed(1);
+                    const highPercent = ((dist.high / total) * 100).toFixed(1);
+                    
+                    result.interpretation = result.interpretation
+                        .replace('{{lowPercent}}', lowPercent)
+                        .replace('{{mediumPercent}}', mediumPercent)
+                        .replace('{{highPercent}}', highPercent);
+                    break;
+                    
+                case 'friConsecutiveChart':
+                    const correlationValue = correlation.consecutiveDays_friScore.toFixed(3);
+                    const correlationStrength = Math.abs(correlation.consecutiveDays_friScore) >= 0.5 ? '高度正相關' : 
+                                               Math.abs(correlation.consecutiveDays_friScore) >= 0.3 ? '中度正相關' : '低度相關';
+                    const correlationClass = Math.abs(correlation.consecutiveDays_friScore) >= 0.5 ? 'stat-high' : 
+                                            Math.abs(correlation.consecutiveDays_friScore) >= 0.3 ? 'stat-medium' : 'stat-low';
+                    
+                    // 計算前10名高風險人員中連續工作天數超過5天的人數
+                    const workloadData = analysisResults.workloadData;
+                    const top10 = workloadData.slice(0, 10);
+                    const highConsecutiveCount = top10.filter(p => {
+                        const person = analysisResults.people[p.name];
+                        return person.maxConsecutiveDays > 5;
+                    }).length;
+                    
+                    result.interpretation = result.interpretation
+                        .replace('{{correlationValue}}', correlationValue)
+                        .replace('{{correlationStrength}}', correlationStrength)
+                        .replace('{{correlationClass}}', correlationClass)
+                        .replace('{{topCount}}', '10')
+                        .replace('{{highConsecutiveCount}}', highConsecutiveCount);
+                    break;
+                    
+                case 'consecutiveDaysChart':
+                    const nonCompliantCount = compliance.nonCompliant;
+                    const nonCompliantPercent = compliance.complianceRate ? (100 - parseFloat(compliance.complianceRate)).toFixed(1) : '0.0';
+                    const complianceRate = compliance.complianceRate || '0.0';
+                    
+                    // 計算連續工作5-6天的人數百分比
+                    const people = Object.values(analysisResults.people);
+                    const mediumRiskCount = people.filter(p => p.maxConsecutiveDays >= 5 && p.maxConsecutiveDays <= 6).length;
+                    const mediumRiskPercent = ((mediumRiskCount / people.length) * 100).toFixed(1);
+                    
+                    // 找出最常見的連續工作天數
+                    const consecutiveDays = people.map(p => p.maxConsecutiveDays);
+                    const frequency = {};
+                    consecutiveDays.forEach(days => {
+                        frequency[days] = (frequency[days] || 0) + 1;
+                    });
+                    let mostCommonDays = 0;
+                    let maxFreq = 0;
+                    Object.keys(frequency).forEach(days => {
+                        if (frequency[days] > maxFreq) {
+                            maxFreq = frequency[days];
+                            mostCommonDays = days;
+                        }
+                    });
+                    
+                    result.interpretation = result.interpretation
+                        .replace('{{nonCompliantCount}}', nonCompliantCount)
+                        .replace('{{nonCompliantPercent}}', nonCompliantPercent)
+                        .replace('{{mediumRiskPercent}}', mediumRiskPercent)
+                        .replace('{{mostCommonDays}}', mostCommonDays)
+                        .replace('{{complianceRate}}', complianceRate);
+                    break;
+                    
+                case 'nightShiftChart':
+                    const nightCorrelationValue = correlation.nightShiftRatio_friScore.toFixed(3);
+                    const nightCorrelationStrength = Math.abs(correlation.nightShiftRatio_friScore) >= 0.5 ? '高度正相關' : 
+                                                    Math.abs(correlation.nightShiftRatio_friScore) >= 0.3 ? '中度正相關' : '低度相關';
+                    const nightCorrelationClass = Math.abs(correlation.nightShiftRatio_friScore) >= 0.5 ? 'stat-high' : 
+                                                 Math.abs(correlation.nightShiftRatio_friScore) >= 0.3 ? 'stat-medium' : 'stat-low';
+                    
+                    // 找出夜班頻率超過30%的高風險人員
+                    const highNightRiskCount = people.filter(p => 
+                        p.nightShiftRatio > 0.3 && p.friScore >= 70
+                    ).length;
+                    const highNightRiskPercent = people.filter(p => p.nightShiftRatio > 0.3).length > 0 ? 
+                        ((highNightRiskCount / people.filter(p => p.nightShiftRatio > 0.3).length) * 100).toFixed(1) : '0.0';
+                    
+                    // 找出極端個案
+                    let extremeCase = '無';
+                    let extremeNightPercent = '0';
+                    let extremeFriScore = '0';
+                    
+                    if (people.length > 0) {
+                        const sortedByNight = [...people].sort((a, b) => b.nightShiftRatio - a.nightShiftRatio);
+                        if (sortedByNight[0].nightShiftRatio > 0) {
+                            extremeCase = sortedByNight[0].name;
+                            extremeNightPercent = (sortedByNight[0].nightShiftRatio * 100).toFixed(1);
+                            extremeFriScore = sortedByNight[0].friScore;
+                        }
+                    }
+                    
+                    result.interpretation = result.interpretation
+                        .replace('{{nightCorrelationValue}}', nightCorrelationValue)
+                        .replace('{{nightCorrelationStrength}}', nightCorrelationStrength)
+                        .replace('{{nightCorrelationClass}}', nightCorrelationClass)
+                        .replace('{{highNightRiskPercent}}', highNightRiskPercent)
+                        .replace('{{extremeCase}}', extremeCase)
+                        .replace('{{extremeNightPercent}}', extremeNightPercent)
+                        .replace('{{extremeFriScore}}', extremeFriScore);
+                    break;
+                    
+                case 'workloadTrendChart':
+                    // 計算每月工作量數據
+                    const monthlyWorkload = calculateMonthlyWorkload();
+                    let peakMonths = '';
+                    let maxWorkload = 0;
+                    let peakIncrease = '0';
+                    let offPeakMonths = '';
+                    
+                    if (monthlyWorkload.length > 0) {
+                        // 找出尖峰月份
+                        const sortedByWorkload = [...monthlyWorkload].sort((a, b) => b.workload - a.workload);
+                        peakMonths = sortedByWorkload.slice(0, 2).map(m => m.month).join('、');
+                        maxWorkload = sortedByWorkload[0].workload;
+                        
+                        // 計算平均值
+                        const avgWorkload = monthlyWorkload.reduce((sum, m) => sum + m.workload, 0) / monthlyWorkload.length;
+                        peakIncrease = ((maxWorkload - avgWorkload) / avgWorkload * 100).toFixed(1);
+                        
+                        // 找出離峰月份
+                        const sortedAsc = [...monthlyWorkload].sort((a, b) => a.workload - b.workload);
+                        offPeakMonths = sortedAsc.slice(0, 2).map(m => m.month).join('、');
+                    }
+                    
+                    result.interpretation = result.interpretation
+                        .replace('{{peakMonths}}', peakMonths || '未知月份')
+                        .replace('{{maxWorkload}}', maxWorkload || '0')
+                        .replace('{{peakIncrease}}', peakIncrease)
+                        .replace('{{offPeakMonths}}', offPeakMonths || '未知月份')
+                        .replace('{{peakDaysPercent}}', '30'); // 簡化版本
+                    break;
+                    
+                case 'shiftTypeChart':
+                    // 計算班型分佈
+                    const shiftTypesData = { '早班': 0, '晚班': 0, '夜班': 0, '日班': 0 };
+                    
+                    Object.values(analysisResults.people).forEach(person => {
+                        if (person.shiftTypes) {
+                            Object.keys(person.shiftTypes).forEach(shiftType => {
+                                if (shiftTypesData.hasOwnProperty(shiftType)) {
+                                    shiftTypesData[shiftType] += person.shiftTypes[shiftType];
+                                } else {
+                                    shiftTypesData['日班'] += person.shiftTypes[shiftType];
+                                }
+                            });
+                        }
+                    });
+                    
+                    // 計算總航班數
+                    const totalFlights = Object.values(shiftTypesData).reduce((a, b) => a + b, 0);
+                    
+                    // 計算百分比
+                    const nightShiftPercent = totalFlights > 0 ? ((shiftTypesData['夜班'] / totalFlights) * 100).toFixed(1) : '0.0';
+                    const morningShiftPercent = totalFlights > 0 ? ((shiftTypesData['早班'] / totalFlights) * 100).toFixed(1) : '0.0';
+                    const eveningShiftPercent = totalFlights > 0 ? ((shiftTypesData['晚班'] / totalFlights) * 100).toFixed(1) : '0.0';
+                    const dayShiftPercent = totalFlights > 0 ? ((shiftTypesData['日班'] / totalFlights) * 100).toFixed(1) : '0.0';
+                    
+                    // 評估夜班比例
+                    const nightShiftAssessment = parseFloat(nightShiftPercent) > 20 ? '高於建議上限（20%），需優先調整' :
+                                                parseFloat(nightShiftPercent) > 15 ? '接近建議上限，需密切監控' :
+                                                '在合理範圍內';
+                    const nightShiftClass = parseFloat(nightShiftPercent) > 20 ? 'stat-high' :
+                                           parseFloat(nightShiftPercent) > 15 ? 'stat-medium' : 'stat-low';
+                    
+                    result.interpretation = result.interpretation
+                        .replace('{{nightShiftPercent}}', nightShiftPercent)
+                        .replace('{{nightShiftAssessment}}', nightShiftAssessment)
+                        .replace('{{nightShiftClass}}', nightShiftClass)
+                        .replace('{{morningShiftPercent}}', morningShiftPercent)
+                        .replace('{{eveningShiftPercent}}', eveningShiftPercent)
+                        .replace('{{dayShiftPercent}}', dayShiftPercent)
+                        .replace('{{commonShiftCombo}}', '早班接晚班');
+                    break;
+            }
+            
+            return result;
+        }
+        
+        // 更新圖表數據網格
+        function updateChartDataGrid(chartId) {
+            const dataGrid = document.getElementById('chart-data-grid');
+            let html = '';
+            
+            switch(chartId) {
+                case 'friDistributionChart':
+                    const dist = analysisResults.friDistribution;
+                    const total = dist.total;
+                    
+                    html = `
+                        <div class="chart-detail-card">
+                            <div class="chart-detail-card-title">低風險人員</div>
+                            <div class="chart-detail-card-value">${dist.low}人</div>
+                            <div style="font-size:0.8rem;color:#666;">佔${((dist.low/total)*100).toFixed(1)}%</div>
+                        </div>
+                        <div class="chart-detail-card">
+                            <div class="chart-detail-card-title">中風險人員</div>
+                            <div class="chart-detail-card-value">${dist.medium}人</div>
+                            <div style="font-size:0.8rem;color:#666;">佔${((dist.medium/total)*100).toFixed(1)}%</div>
+                        </div>
+                        <div class="chart-detail-card">
+                            <div class="chart-detail-card-title">高風險人員</div>
+                            <div class="chart-detail-card-value">${dist.high}人</div>
+                            <div style="font-size:0.8rem;color:#666;">佔${((dist.high/total)*100).toFixed(1)}%</div>
+                        </div>
+                        <div class="chart-detail-card">
+                            <div class="chart-detail-card-title">總人數</div>
+                            <div class="chart-detail-card-value">${total}人</div>
+                            <div style="font-size:0.8rem;color:#666;">分析樣本</div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'consecutiveDaysChart':
+                    const compliance = analysisResults.consecutiveDays.compliance;
+                    
+                    html = `
+                        <div class="chart-detail-card">
+                            <div class="chart-detail-card-title">法規符合率</div>
+                            <div class="chart-detail-card-value">${compliance.complianceRate}%</div>
+                            <div style="font-size:0.8rem;color:#666;">符合勞基法第36條</div>
+                        </div>
+                        <div class="chart-detail-card">
+                            <div class="chart-detail-card-title">違規人數</div>
+                            <div class="chart-detail-card-value">${compliance.nonCompliant}人</div>
+                            <div style="font-size:0.8rem;color:#666;">連續工作>6天</div>
+                        </div>
+                        <div class="chart-detail-card">
+                            <div class="chart-detail-card-title">平均連續天數</div>
+                            <div class="chart-detail-card-value">${analysisResults.descriptiveStats.consecutiveDays.mean}</div>
+                            <div style="font-size:0.8rem;color:#666;">天</div>
+                        </div>
+                        <div class="chart-detail-card">
+                            <div class="chart-detail-card-title">最長連續天數</div>
+                            <div class="chart-detail-card-value">${analysisResults.descriptiveStats.consecutiveDays.max}</div>
+                            <div style="font-size:0.8rem;color:#666;">天</div>
+                        </div>
+                    `;
+                    break;
+                    
+                default:
+                    // 其他圖表使用通用數據
+                    const totalPeople = Object.keys(analysisResults.people).length;
+                    const avgFriScore = analysisResults.descriptiveStats.workDays ? 
+                        analysisResults.workloadData.reduce((sum, p) => sum + p.friScore, 0) / analysisResults.workloadData.length : 0;
+                    
+                    html = `
+                        <div class="chart-detail-card">
+                            <div class="chart-detail-card-title">分析人員數</div>
+                            <div class="chart-detail-card-value">${totalPeople}人</div>
+                            <div style="font-size:0.8rem;color:#666;">有效樣本</div>
+                        </div>
+                        <div class="chart-detail-card">
+                            <div class="chart-detail-card-title">平均FRI分數</div>
+                            <div class="chart-detail-card-value">${avgFriScore.toFixed(1)}</div>
+                            <div style="font-size:0.8rem;color:#666;">整體疲勞風險</div>
+                        </div>
+                        <div class="chart-detail-card">
+                            <div class="chart-detail-card-title">資料期間</div>
+                            <div class="chart-detail-card-value">${inferredYear}年</div>
+                            <div style="font-size:0.8rem;color:#666;">分析年度</div>
+                        </div>
+                        <div class="chart-detail-card">
+                            <div class="chart-detail-card-title">總航班數</div>
+                            <div class="chart-detail-card-value">${rawData.length}</div>
+                            <div style="font-size:0.8rem;color:#666;">工作記錄</div>
+                        </div>
+                    `;
+            }
+            
+            dataGrid.innerHTML = html;
+        }
         
         // 處理檔案選擇（自動開始分析）
         function handleFileSelect() {
@@ -986,6 +1836,9 @@
                 
                 // 顯示分析結果
                 displayAnalysisResults();
+                
+                // 綁定表格點擊事件
+                bindTableClickEvents();
             } catch (error) {
                 console.error("分析過程中發生錯誤:", error);
                 alert("分析過程中發生錯誤，請檢查資料格式是否正確。");
@@ -1015,14 +1868,21 @@
                 shiftTypes[shiftType] = (shiftTypes[shiftType] || 0) + 1;
             });
             
+            // 計算夜班頻率
+            const nightShifts = shiftTypes['夜班'] || 0;
+            const nightShiftRatio = workDates.length > 0 ? (nightShifts / workDates.length) : 0;
+            
             return {
                 name: personName,
                 totalWorkDays: workDates.length,
                 totalFlights: records.length,
                 avgFlightsPerDay: records.length / Math.max(1, workDates.length),
                 maxConsecutiveDays: maxConsecutiveDays,
-                nightShifts: shiftTypes['夜班'] || 0,
-                shiftTypes: shiftTypes
+                nightShifts: nightShifts,
+                nightShiftRatio: nightShiftRatio,
+                shiftTypes: shiftTypes,
+                workDates: workDates,
+                rawRecords: records
             };
         }
         
@@ -1144,8 +2004,7 @@
                 fri += densityScore;
                 
                 // 3. 基於夜班比例 (權重 0.35)
-                const nightShiftRatio = person.totalWorkDays > 0 ? person.nightShifts / person.totalWorkDays : 0;
-                const nightShiftScore = Math.min(nightShiftRatio * 35, 35);
+                const nightShiftScore = Math.min(person.nightShiftRatio * 35, 35);
                 fri += nightShiftScore;
                 
                 person.friScore = Math.min(Math.round(fri), 100);
@@ -1241,7 +2100,7 @@
             const workDays = people.map(p => p.totalWorkDays);
             const avgFlights = people.map(p => p.avgFlightsPerDay);
             const consecutiveDays = people.map(p => p.maxConsecutiveDays);
-            const nightShiftRatios = people.map(p => p.nightShifts / Math.max(1, p.totalWorkDays));
+            const nightShiftRatios = people.map(p => p.nightShiftRatio);
             const friScores = people.map(p => p.friScore);
             
             // 計算相關係數
@@ -1501,8 +2360,8 @@
                 else riskClass = 'stat-low';
                 
                 bodyHTML += `
-                <tr>
-                    <td>${person.name}</td>
+                <tr data-person="${person.name}">
+                    <td><strong>${person.name}</strong></td>
                     <td>${person.workDays}</td>
                     <td>${person.totalFlights}</td>
                     <td>${person.avgFlights}</td>
@@ -1515,6 +2374,110 @@
             });
             
             document.getElementById('workload-table-body').innerHTML = bodyHTML;
+        }
+        
+        // 綁定表格點擊事件
+        function bindTableClickEvents() {
+            const tableRows = document.querySelectorAll('#workload-table-body tr');
+            
+            tableRows.forEach(row => {
+                row.addEventListener('click', function() {
+                    const personName = this.getAttribute('data-person');
+                    showPersonDetail(personName);
+                });
+            });
+        }
+        
+        // 顯示人員詳細資料
+        function showPersonDetail(personName) {
+            const person = analysisResults.people[personName];
+            if (!person) return;
+            
+            // 更新彈出層標題
+            document.getElementById('person-detail-name').innerHTML = `
+                ${personName} <span class="stat-label ${person.riskClass === 'high' ? 'stat-high' : person.riskClass === 'medium' ? 'stat-medium' : 'stat-low'}">${person.riskLevel} (FRI: ${person.friScore})</span>
+            `;
+            
+            // 更新詳細指標
+            const metricsGrid = document.getElementById('person-detail-metrics');
+            metricsGrid.innerHTML = `
+                <div class="person-detail-card">
+                    <div class="detail-card-title">工作天數</div>
+                    <div class="detail-card-value">${person.totalWorkDays}</div>
+                </div>
+                <div class="person-detail-card">
+                    <div class="detail-card-title">總航班數</div>
+                    <div class="detail-card-value">${person.totalFlights}</div>
+                </div>
+                <div class="person-detail-card">
+                    <div class="detail-card-title">平均每日航班</div>
+                    <div class="detail-card-value">${person.avgFlightsPerDay.toFixed(2)}</div>
+                </div>
+                <div class="person-detail-card">
+                    <div class="detail-card-title">最長連續工作</div>
+                    <div class="detail-card-value ${person.maxConsecutiveDays > 5 ? 'stat-high' : person.maxConsecutiveDays > 3 ? 'stat-medium' : 'stat-low'}">${person.maxConsecutiveDays} 天</div>
+                </div>
+                <div class="person-detail-card">
+                    <div class="detail-card-title">夜班次數</div>
+                    <div class="detail-card-value ${person.nightShifts > 5 ? 'stat-high' : person.nightShifts > 2 ? 'stat-medium' : 'stat-low'}">${person.nightShifts}</div>
+                </div>
+                <div class="person-detail-card">
+                    <div class="detail-card-title">夜班比例</div>
+                    <div class="detail-card-value">${(person.nightShiftRatio * 100).toFixed(1)}%</div>
+                </div>
+            `;
+            
+            // 更新工作日期時間軸
+            const workDatesContainer = document.getElementById('person-work-dates');
+            workDatesContainer.innerHTML = '';
+            
+            person.workDates.forEach(date => {
+                const dateElement = document.createElement('div');
+                dateElement.className = 'timeline-item';
+                dateElement.textContent = date;
+                workDatesContainer.appendChild(dateElement);
+            });
+            
+            // 更新原始資料
+            const rawDataContainer = document.getElementById('person-raw-data');
+            let rawDataHTML = '<table class="thesis-table" style="font-size: 0.8rem;">';
+            rawDataHTML += '<thead><tr><th>日期</th><th>機號</th><th>航班</th><th>STA</th><th>STD</th><th>來自</th><th>飛往</th><th>班型</th></tr></thead><tbody>';
+            
+            person.rawRecords.forEach(record => {
+                const shiftType = getShiftType(record);
+                rawDataHTML += `
+                    <tr>
+                        <td>${record.日期}</td>
+                        <td>${record.機號 || ''}</td>
+                        <td>${record.檢查 || record.入境 || record.出境 || ''}</td>
+                        <td>${record.STA || ''}</td>
+                        <td>${record.STD || ''}</td>
+                        <td>${record.來自 || ''}</td>
+                        <td>${record.飛往 || ''}</td>
+                        <td>${shiftType}</td>
+                    </tr>
+                `;
+            });
+            
+            rawDataHTML += '</tbody></table>';
+            rawDataContainer.innerHTML = rawDataHTML;
+            
+            // 更新專家訪談建議
+            let interviewReason = '';
+            if (person.friScore >= 70) {
+                interviewReason = `FRI分數高達${person.friScore}（高風險）`;
+            } else if (person.maxConsecutiveDays > 6) {
+                interviewReason = `連續工作${person.maxConsecutiveDays}天，超過法規上限`;
+            } else if (person.nightShifts > 5) {
+                interviewReason = `夜班次數高達${person.nightShifts}次，生理節律干擾嚴重`;
+            } else {
+                interviewReason = '工作負荷較高，具代表性';
+            }
+            
+            document.getElementById('interview-reason').textContent = interviewReason;
+            
+            // 顯示彈出層
+            personDetailModal.style.display = 'block';
         }
         
         // 顯示相關性分析
@@ -1596,14 +2559,29 @@
         
         // 建立圖表
         function createCharts() {
+            // 清除舊圖表
+            Object.values(charts).forEach(chart => {
+                if (chart) chart.destroy();
+            });
+            charts = {};
+            
             // 1. FRI分佈圖
             createFRIDistributionChart();
             
-            // 2. 班型分佈圖
-            createShiftTypeChart();
+            // 2. FRI與連續工作天數關聯圖
+            createFRIConsecutiveChart();
             
-            // 3. 工作量趨勢圖
+            // 3. 連續工作天數分佈圖
+            createConsecutiveDaysChart();
+            
+            // 4. 夜班頻率與疲勞風險關聯圖
+            createNightShiftChart();
+            
+            // 5. 工作負荷時間序列圖
             createWorkloadTrendChart();
+            
+            // 6. 班型分佈圖
+            createShiftTypeChart();
         }
         
         // 建立FRI分佈圖
@@ -1611,7 +2589,7 @@
             const ctx = document.getElementById('friDistributionChart').getContext('2d');
             const dist = analysisResults.friDistribution;
             
-            charts.friDistribution = new Chart(ctx, {
+            charts.friDistributionChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: ['低風險 (FRI < 50)', '中風險 (50 ≤ FRI < 70)', '高風險 (FRI ≥ 70)'],
@@ -1633,7 +2611,7 @@
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
+                    maintainAspectRatio: true,
                     plugins: {
                         legend: {
                             display: false
@@ -1658,6 +2636,349 @@
             });
         }
         
+        // 建立FRI與連續工作天數關聯圖
+        function createFRIConsecutiveChart() {
+            const ctx = document.getElementById('friConsecutiveChart').getContext('2d');
+            const people = Object.values(analysisResults.people);
+            
+            // 準備數據
+            const labels = people.map(p => p.name);
+            const friScores = people.map(p => p.friScore);
+            const consecutiveDays = people.map(p => p.maxConsecutiveDays);
+            
+            // 按FRI分數排序
+            const sortedIndices = friScores.map((score, index) => ({score, index}))
+                .sort((a, b) => b.score - a.score)
+                .map(item => item.index);
+            
+            const sortedLabels = sortedIndices.map(i => labels[i].substring(0, 3) + '...');
+            const sortedFriScores = sortedIndices.map(i => friScores[i]);
+            const sortedConsecutiveDays = sortedIndices.map(i => consecutiveDays[i]);
+            
+            charts.friConsecutiveChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: sortedLabels.slice(0, 15), // 只顯示前15人
+                    datasets: [
+                        {
+                            label: 'FRI分數',
+                            data: sortedFriScores.slice(0, 15),
+                            borderColor: '#1a3c8b',
+                            backgroundColor: 'rgba(26, 60, 139, 0.1)',
+                            borderWidth: 3,
+                            fill: false,
+                            yAxisID: 'y'
+                        },
+                        {
+                            label: '連續工作天數',
+                            data: sortedConsecutiveDays.slice(0, 15),
+                            borderColor: '#dc3545',
+                            backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                            borderWidth: 2,
+                            fill: false,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'FRI分數'
+                            },
+                            min: 0,
+                            max: 100
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            title: {
+                                display: true,
+                                text: '連續工作天數'
+                            },
+                            min: 0,
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: '人員（按FRI排序）'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 建立連續工作天數分佈圖
+        function createConsecutiveDaysChart() {
+            const ctx = document.getElementById('consecutiveDaysChart').getContext('2d');
+            const dist = analysisResults.consecutiveDays.distribution;
+            
+            // 排序連續天數
+            const sortedDays = Object.keys(dist).map(Number).sort((a, b) => a - b);
+            const labels = sortedDays.map(d => `${d}天`);
+            const data = sortedDays.map(d => dist[d]);
+            
+            // 計算法規上限線
+            const maxConsecutive = Math.max(...sortedDays);
+            const limitLine = {
+                id: 'limitLine',
+                afterDatasetsDraw(chart) {
+                    const {ctx, chartArea: {left, right, top, bottom}, scales: {x, y}} = chart;
+                    const limitX = x.getPixelForValue(6); // 6天法規上限
+                    
+                    ctx.save();
+                    ctx.strokeStyle = '#dc3545';
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([5, 5]);
+                    ctx.beginPath();
+                    ctx.moveTo(limitX, top);
+                    ctx.lineTo(limitX, bottom);
+                    ctx.stroke();
+                    ctx.restore();
+                    
+                    // 添加文字標籤
+                    ctx.save();
+                    ctx.fillStyle = '#dc3545';
+                    ctx.font = 'bold 12px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('法規上限 (6天)', limitX, top - 10);
+                    ctx.restore();
+                }
+            };
+            
+            charts.consecutiveDaysChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '人數',
+                        data: data,
+                        backgroundColor: sortedDays.map(d => d <= 6 ? 'rgba(40, 167, 69, 0.7)' : 'rgba(220, 53, 69, 0.7)'),
+                        borderColor: sortedDays.map(d => d <= 6 ? 'rgb(40, 167, 69)' : 'rgb(220, 53, 69)'),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '人數'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: '連續工作天數'
+                            }
+                        }
+                    }
+                },
+                plugins: [limitLine]
+            });
+        }
+        
+        // 建立夜班頻率與疲勞風險關聯圖
+        function createNightShiftChart() {
+            const ctx = document.getElementById('nightShiftChart').getContext('2d');
+            const people = Object.values(analysisResults.people);
+            
+            // 準備數據
+            const nightShiftRatios = people.map(p => p.nightShiftRatio * 100); // 轉換為百分比
+            const friScores = people.map(p => p.friScore);
+            
+            charts.nightShiftChart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: '人員',
+                        data: nightShiftRatios.map((ratio, index) => ({
+                            x: ratio,
+                            y: friScores[index]
+                        })),
+                        backgroundColor: friScores.map(score => 
+                            score >= 70 ? 'rgba(220, 53, 69, 0.7)' : 
+                            score >= 50 ? 'rgba(255, 193, 7, 0.7)' : 
+                            'rgba(40, 167, 69, 0.7)'
+                        ),
+                        borderColor: friScores.map(score => 
+                            score >= 70 ? 'rgb(220, 53, 69)' : 
+                            score >= 50 ? 'rgb(255, 193, 7)' : 
+                            'rgb(40, 167, 69)'
+                        ),
+                        borderWidth: 1,
+                        pointRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const person = people[context.dataIndex];
+                                    return [
+                                        `人員: ${person.name}`,
+                                        `夜班比例: ${context.parsed.x.toFixed(1)}%`,
+                                        `FRI分數: ${context.parsed.y}`
+                                    ];
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'FRI分數'
+                            }
+                        },
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: '夜班比例 (%)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 建立工作負荷時間序列圖
+        function createWorkloadTrendChart() {
+            const ctx = document.getElementById('workloadTrendChart').getContext('2d');
+            
+            // 根據實際數據計算每月工作量
+            const monthlyWorkload = calculateMonthlyWorkload();
+            const months = monthlyWorkload.map(m => m.month);
+            const workloads = monthlyWorkload.map(m => m.workload);
+            
+            // 計算平均值
+            const avgWorkload = workloads.reduce((a, b) => a + b, 0) / workloads.length;
+            
+            // 識別尖峰月份（高於平均20%）
+            const peakThreshold = avgWorkload * 1.2;
+            
+            charts.workloadTrendChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [
+                        {
+                            label: '每月工作量',
+                            data: workloads,
+                            borderColor: '#1a3c8b',
+                            backgroundColor: 'rgba(26, 60, 139, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.3
+                        },
+                        {
+                            label: '平均工作量',
+                            data: Array(months.length).fill(avgWorkload),
+                            borderColor: '#6c757d',
+                            borderWidth: 1,
+                            borderDash: [5, 5],
+                            fill: false,
+                            pointRadius: 0
+                        },
+                        {
+                            label: '尖峰閾值',
+                            data: Array(months.length).fill(peakThreshold),
+                            borderColor: '#dc3545',
+                            borderWidth: 1,
+                            borderDash: [3, 3],
+                            fill: false,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '工作量（航班數）'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: '月份'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 計算每月工作量
+        function calculateMonthlyWorkload() {
+            // 初始化月份工作量
+            const monthlyWorkload = {};
+            
+            // 處理原始數據
+            rawData.forEach(record => {
+                const dateStr = record.日期;
+                const match = dateStr.match(/(\d{1,2})月/);
+                if (match) {
+                    const month = `${match[1]}月`;
+                    monthlyWorkload[month] = (monthlyWorkload[month] || 0) + 1;
+                }
+            });
+            
+            // 轉換為陣列並排序
+            return Object.keys(monthlyWorkload)
+                .map(month => ({ month, workload: monthlyWorkload[month] }))
+                .sort((a, b) => {
+                    const aMonth = parseInt(a.month);
+                    const bMonth = parseInt(b.month);
+                    return aMonth - bMonth;
+                });
+        }
+        
         // 建立班型分佈圖
         function createShiftTypeChart() {
             const ctx = document.getElementById('shiftTypeChart').getContext('2d');
@@ -1680,98 +3001,44 @@
             // 創建圖表數據
             const labels = [];
             const data = [];
+            const backgroundColors = [];
             
             for (const [shiftType, count] of Object.entries(shiftTypesData)) {
                 if (count > 0) {
                     labels.push(shiftType);
                     data.push(count);
+                    
+                    // 根據班型設定顏色
+                    if (shiftType === '夜班') {
+                        backgroundColors.push('rgba(220, 53, 69, 0.7)');
+                    } else if (shiftType === '早班') {
+                        backgroundColors.push('rgba(255, 193, 7, 0.7)');
+                    } else if (shiftType === '晚班') {
+                        backgroundColors.push('rgba(40, 167, 69, 0.7)');
+                    } else {
+                        backgroundColors.push('rgba(52, 152, 219, 0.7)');
+                    }
                 }
             }
             
-            charts.shiftType = new Chart(ctx, {
+            charts.shiftTypeChart = new Chart(ctx, {
                 type: 'pie',
                 data: {
                     labels: labels,
                     datasets: [{
                         label: '航班數',
                         data: data,
-                        backgroundColor: [
-                            'rgba(52, 152, 219, 0.7)',
-                            'rgba(155, 89, 182, 0.7)',
-                            'rgba(231, 76, 60, 0.7)',
-                            'rgba(46, 204, 113, 0.7)'
-                        ],
-                        borderColor: [
-                            'rgb(52, 152, 219)',
-                            'rgb(155, 89, 182)',
-                            'rgb(231, 76, 60)',
-                            'rgb(46, 204, 113)'
-                        ],
+                        backgroundColor: backgroundColors,
+                        borderColor: backgroundColors.map(color => color.replace('0.7', '1')),
                         borderWidth: 1
                     }]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
+                    maintainAspectRatio: true,
                     plugins: {
                         legend: {
                             position: 'right'
-                        }
-                    }
-                }
-            });
-        }
-        
-        // 建立工作量趨勢圖
-        function createWorkloadTrendChart() {
-            const ctx = document.getElementById('workloadTrendChart').getContext('2d');
-            
-            // 模擬工作量趨勢
-            const months = ['1月', '2月', '3月', '4月', '5月', '6月'];
-            const workload = months.map((month, i) => {
-                if (i === 1 || i === 4) {
-                    return 120 + Math.random() * 30;
-                } else {
-                    return 80 + Math.random() * 40;
-                }
-            });
-            
-            charts.workloadTrend = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: months,
-                    datasets: [{
-                        label: '總航班保障量',
-                        data: workload,
-                        borderColor: '#1a3c8b',
-                        backgroundColor: 'rgba(26, 60, 139, 0.1)',
-                        borderWidth: 2,
-                        fill: true,
-                        tension: 0.3
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top'
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: '航班數'
-                            }
-                        },
-                        x: {
-                            title: {
-                                display: true,
-                                text: '月份'
-                            }
                         }
                     }
                 }
@@ -1789,7 +3056,8 @@
             let spssData = "人員\t工作天數\t總航班數\t平均每日航班\t最大連續工作天數\t夜班次數\tFRI分數\t風險等級\n";
             
             analysisResults.workloadData.forEach(person => {
-                spssData += `${person.name}\t${person.workDays}\t${person.totalFlights}\t${person.avgFlights}\t${getMaxConsecutiveDays(person.name)}\t${person.nightShifts}\t${person.friScore}\t${person.riskLevel}\n`;
+                const personObj = analysisResults.people[person.name];
+                spssData += `${person.name}\t${person.workDays}\t${person.totalFlights}\t${person.avgFlights}\t${personObj.maxConsecutiveDays}\t${person.nightShifts}\t${person.friScore}\t${person.riskLevel}\n`;
             });
             
             const dataUri = 'data:text/tab-separated-values;charset=utf-8,' + encodeURIComponent(spssData);
@@ -1797,12 +3065,6 @@
             linkElement.setAttribute('href', dataUri);
             linkElement.setAttribute('download', '疲勞風險分析資料_SPSS格式.txt');
             linkElement.click();
-        }
-        
-        // 取得人員的最大連續工作天數
-        function getMaxConsecutiveDays(personName) {
-            const person = analysisResults.people[personName];
-            return person ? person.maxConsecutiveDays : 0;
         }
         
         // 匯出圖表
@@ -1815,6 +3077,7 @@
             if (confirm('確定要重新開始分析嗎？所有當前分析結果將會被清除。')) {
                 rawData = [];
                 analysisResults = {};
+                chartDetailInfo = {};
                 
                 // 清除圖表
                 Object.values(charts).forEach(chart => {
